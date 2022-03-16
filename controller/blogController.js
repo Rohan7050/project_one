@@ -57,6 +57,27 @@ const getBlog = async (req, res) => {
     }
 }
 
+const getBlog1 = async (req, res) => {
+    try{
+        const data = req.query;
+        const filter = {
+            isDeleted: false, 
+            isPublished: true,
+            ...data
+        }
+        const token = req.headers["x-api-key"]
+        const decodeedToken = jwt.verify(token, "projectOne")
+        // return res.send({filter: filter})
+        const blog = await blogModel.find({$or: [filter, {authorId: decodeedToken.id}]})
+        if (blog.length == 0){
+            return res.status(400).send({status: false, msg: "no blogs published"}) 
+        }
+        return res.status(201).send({status: true, data: blog})
+    }catch(e){
+        res.status(400).send({status: false, msg: e.message})
+    }
+}
+
 // to update blog 
 const updateBlog = async (req, res) => {
     try{
@@ -138,6 +159,7 @@ const deleteBlogBykey = async (req, res) => {
 module.exports.createBlog = createBlog;
 module.exports.createBlog1 = createBlog1;
 module.exports.getBlog = getBlog
+module.exports.getBlog1 = getBlog1
 module.exports.updateBlog = updateBlog
 module.exports.deleteBlogById = deleteBlogById
 module.exports.deleteBlogBykey = deleteBlogBykey
