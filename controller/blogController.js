@@ -4,20 +4,20 @@ const blogModel = require("../model/blogModel")
 const authorModel = require("../model/authorModel")
 
 // to create blog doc in DB
-const createBlog = async (req, res) => {
-    try{
-        const data = req.body;
-        const {authorId} = req.body
-        const author = await authorModel.findById(authorId)
-        if (!author){
-            return res.status(400).send({status: false, msg: "author does not exist"})
-        }
-        const blog = await blogModel.create(data)
-        res.status(201).send({status: true, data: blog})
-    }catch(e){
-        res.status(400).send({status: false, msg: e.message})
-    }
-}
+// const createBlog = async (req, res) => {
+//     try{
+//         const data = req.body;
+//         const {authorId} = req.body
+//         const author = await authorModel.findById(authorId)
+//         if (!author){
+//             return res.status(400).send({status: false, msg: "author does not exist"})
+//         }
+//         const blog = await blogModel.create(data)
+//         res.status(201).send({status: true, data: blog})
+//     }catch(e){
+//         res.status(400).send({status: false, msg: e.message})
+//     }
+// }
 
 const createBlog1 = async (req, res) => {
     try{
@@ -38,24 +38,24 @@ const createBlog1 = async (req, res) => {
 }
 
 // to get blog according filter
-const getBlog = async (req, res) => {
-    try{
-        const data = req.query;
-        const filter = {
-            isDeleted: false, 
-            isPublished: true,
-            ...data
-        }
-        // return res.send({filter: filter})
-        const blog = await blogModel.find(filter)
-        if (blog.length == 0){
-            return res.status(400).send({status: false, msg: "no blogs published"}) 
-        }
-        return res.status(201).send({status: true, data: blog})
-    }catch(e){
-        res.status(400).send({status: false, msg: e.message})
-    }
-}
+// const getBlog = async (req, res) => {
+//     try{
+//         const data = req.query;
+//         const filter = {
+//             isDeleted: false, 
+//             isPublished: true,
+//             ...data
+//         }
+//         // return res.send({filter: filter})
+//         const blog = await blogModel.find(filter)
+//         if (blog.length == 0){
+//             return res.status(400).send({status: false, msg: "no blogs published"}) 
+//         }
+//         return res.status(201).send({status: true, data: blog})
+//     }catch(e){
+//         res.status(400).send({status: false, msg: e.message})
+//     }
+// }
 
 const getBlog1 = async (req, res) => {
     try{
@@ -68,7 +68,7 @@ const getBlog1 = async (req, res) => {
         const token = req.headers["x-api-key"]
         const decodeedToken = jwt.verify(token, "projectOne")
         // return res.send({filter: filter})
-        const blog = await blogModel.find({$or: [filter, {authorId: decodeedToken.id}]})
+        const blog = await blogModel.find({$or: [filter, {authorId: decodeedToken.id, ...data}]})
         if (blog.length == 0){
             return res.status(400).send({status: false, msg: "no blogs published"}) 
         }
@@ -156,10 +156,10 @@ const deleteBlogBykey = async (req, res) => {
     }
 }
 
-module.exports.createBlog = createBlog;
+// module.exports.createBlog = createBlog;
 module.exports.createBlog1 = createBlog1;
-module.exports.getBlog = getBlog
-module.exports.getBlog1 = getBlog1
-module.exports.updateBlog = updateBlog
-module.exports.deleteBlogById = deleteBlogById
-module.exports.deleteBlogBykey = deleteBlogBykey
+// module.exports.getBlog = getBlog;
+module.exports.getBlog1 = getBlog1;
+module.exports.updateBlog = updateBlog;
+module.exports.deleteBlogById = deleteBlogById;
+module.exports.deleteBlogBykey = deleteBlogBykey;
