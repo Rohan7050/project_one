@@ -1,4 +1,5 @@
 const moment = require("moment")
+const jwt = require("jsonwebtoken")
 const blogModel = require("../model/blogModel")
 const authorModel = require("../model/authorModel")
 
@@ -6,6 +7,24 @@ const authorModel = require("../model/authorModel")
 const createBlog = async (req, res) => {
     try{
         const data = req.body;
+        const {authorId} = req.body
+        const author = await authorModel.findById(authorId)
+        if (!author){
+            return res.status(400).send({status: false, msg: "author does not exist"})
+        }
+        const blog = await blogModel.create(data)
+        res.status(201).send({status: true, data: blog})
+    }catch(e){
+        res.status(400).send({status: false, msg: e.message})
+    }
+}
+
+const createBlog1 = async (req, res) => {
+    try{
+        const data = req.body;
+        const token = req.headers["x-api-key"]
+        const decodeedToken = jwt.verify(token, "projectOne")
+        data.authorId = decodeedToken.id
         const {authorId} = req.body
         const author = await authorModel.findById(authorId)
         if (!author){
@@ -117,6 +136,7 @@ const deleteBlogBykey = async (req, res) => {
 }
 
 module.exports.createBlog = createBlog;
+module.exports.createBlog1 = createBlog1;
 module.exports.getBlog = getBlog
 module.exports.updateBlog = updateBlog
 module.exports.deleteBlogById = deleteBlogById

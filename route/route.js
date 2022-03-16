@@ -19,7 +19,7 @@ router.post("/authors", authorController.createAuthor)
 router.post("/login", authorController.login)
 
 // for blog
-router.post("/blogs", mw.authentication, blogController.createBlog)
+router.post("/blogs", mw.authentication, blogController.createBlog1)
 router.get("/blogs", mw.authentication, blogController.getBlog)
 router.put("/blogs/:blogId", mw.authentication, mw.authroisation3, blogController.updateBlog)
 router.delete("/blogs/:blogId", mw.authentication, mw.authroisation3, blogController.deleteBlogById)
