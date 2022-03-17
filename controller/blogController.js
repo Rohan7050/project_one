@@ -1,5 +1,6 @@
 const moment = require("moment")
 const jwt = require("jsonwebtoken")
+// const moment = require("moment")
 const blogModel = require("../model/blogModel")
 const authorModel = require("../model/authorModel")
 
@@ -22,6 +23,9 @@ const authorModel = require("../model/authorModel")
 const createBlog1 = async (req, res) => {
     try{
         const data = req.body;
+        if (data.isPublished == true){
+            data.publishedAt = moment().format()
+        }
         const token = req.headers["x-api-key"]
         const decodeedToken = jwt.verify(token, "projectOne")
         data.authorId = decodeedToken.id
@@ -38,26 +42,7 @@ const createBlog1 = async (req, res) => {
 }
 
 // to get blog according filter
-// const getBlog = async (req, res) => {
-//     try{
-//         const data = req.query;
-//         const filter = {
-//             isDeleted: false, 
-//             isPublished: true,
-//             ...data
-//         }
-//         // return res.send({filter: filter})
-//         const blog = await blogModel.find(filter)
-//         if (blog.length == 0){
-//             return res.status(400).send({status: false, msg: "no blogs published"}) 
-//         }
-//         return res.status(201).send({status: true, data: blog})
-//     }catch(e){
-//         res.status(400).send({status: false, msg: e.message})
-//     }
-// }
-
-const getBlog1 = async (req, res) => {
+const getBlog = async (req, res) => {
     try{
         const data = req.query;
         const filter = {
@@ -65,10 +50,8 @@ const getBlog1 = async (req, res) => {
             isPublished: true,
             ...data
         }
-        const token = req.headers["x-api-key"]
-        const decodeedToken = jwt.verify(token, "projectOne")
         // return res.send({filter: filter})
-        const blog = await blogModel.find({$or: [filter, {authorId: decodeedToken.id, ...data, isDeleted: false}]})
+        const blog = await blogModel.find(filter)
         if (blog.length == 0){
             return res.status(400).send({status: false, msg: "no blogs published"}) 
         }
@@ -77,6 +60,27 @@ const getBlog1 = async (req, res) => {
         res.status(400).send({status: false, msg: e.message})
     }
 }
+
+// const getBlog1 = async (req, res) => {
+//     try{
+//         const data = req.query;
+//         const filter = {
+//             isDeleted: false, 
+//             isPublished: true,
+//             ...data
+//         }
+//         const token = req.headers["x-api-key"]
+//         const decodeedToken = jwt.verify(token, "projectOne")
+//         // return res.send({filter: filter})
+//         const blog = await blogModel.find({$or: [filter, {authorId: decodeedToken.id, ...data, isDeleted: false}]})
+//         if (blog.length == 0){
+//             return res.status(400).send({status: false, msg: "no blogs published"}) 
+//         }
+//         return res.status(201).send({status: true, data: blog})
+//     }catch(e){
+//         res.status(400).send({status: false, msg: e.message})
+//     }
+// }
 
 // to update blog 
 const updateBlog = async (req, res) => {
@@ -158,8 +162,8 @@ const deleteBlogBykey = async (req, res) => {
 
 // module.exports.createBlog = createBlog;
 module.exports.createBlog1 = createBlog1;
-// module.exports.getBlog = getBlog;
-module.exports.getBlog1 = getBlog1;
+module.exports.getBlog = getBlog;
+// module.exports.getBlog1 = getBlog1;
 module.exports.updateBlog = updateBlog;
 module.exports.deleteBlogById = deleteBlogById;
 module.exports.deleteBlogBykey = deleteBlogBykey;
