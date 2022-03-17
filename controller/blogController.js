@@ -68,7 +68,7 @@ const getBlog1 = async (req, res) => {
         const token = req.headers["x-api-key"]
         const decodeedToken = jwt.verify(token, "projectOne")
         // return res.send({filter: filter})
-        const blog = await blogModel.find({$or: [filter, {authorId: decodeedToken.id, ...data}]})
+        const blog = await blogModel.find({$or: [filter, {authorId: decodeedToken.id, ...data, isDeleted: false}]})
         if (blog.length == 0){
             return res.status(400).send({status: false, msg: "no blogs published"}) 
         }
