@@ -89,12 +89,34 @@ const updateBlog = async (req, res) => {
         const data = req.body
         // res.send({id: id})
         const blog = await blogModel.findOne({_id: id})
-        // return res.send({Err: blog})
+        // return res.send({Err: category})
         if (!blog){
             return res.send({status: false, Err: "blog not found"})
         }
         if (blog.isDeleted == true){
             return res.status(400).send({status: false, msg: "this blog is deleted"})
+        }
+        const {category, tags, subcategory} = blog
+        if (data.category){
+            if(!category.includes(data.category)){
+                data.category = [...category, data.category]
+            }else{
+                data.category = [...category]
+            }  
+        }
+        if (data.tags){
+            if(!tags.includes(data.tags)){
+                data.tags = [...tags, data.tags]
+            }else{
+                data.tags = [...tags]
+            }  
+        }
+        if (data.subcategory){
+            if(!subcategory.includes(data.subcategory)){
+                data.subcategory = [...subcategory, data.subcategory]
+            }else{
+                data.subcategory = [...subcategory]
+            }  
         }
         if (data.isPublished == true){
             data.publishedAt = moment().format()
